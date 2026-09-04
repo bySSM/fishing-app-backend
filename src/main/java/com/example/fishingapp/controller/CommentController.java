@@ -30,57 +30,41 @@ public class CommentController {
     @PostMapping("/catch/{catchId}")
     public ResponseEntity<?> addComment(@PathVariable Long catchId,
                                         @Valid @RequestBody CommentRequest request) {
-        try {
-            String username = getCurrentUsername();
-            User user = userService.findByUsername(username);
+        String username = getCurrentUsername();
+        User user = userService.findByUsername(username);
 
-            CommentResponse comment = commentService.addComment(catchId, user.getId(), request);
-            return ResponseEntity.ok(comment);
-        } catch (Exception e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
-        }
+        CommentResponse comment = commentService.addComment(catchId, user.getId(), request);
+        return ResponseEntity.ok(comment);
     }
 
     @GetMapping("/catch/{catchId}")
     public ResponseEntity<?> getCatchComments(@PathVariable Long catchId) {
-        try {
-            List<CommentResponse> comments = commentService.getCatchComments(catchId);
-            long count = commentService.getCommentsCount(catchId);
+        List<CommentResponse> comments = commentService.getCatchComments(catchId);
+        long count = commentService.getCommentsCount(catchId);
 
-            Map<String, Object> response = new HashMap<>();
-            response.put("comments", comments);
-            response.put("count", count);
+        Map<String, Object> response = new HashMap<>();
+        response.put("comments", comments);
+        response.put("count", count);
 
-            return ResponseEntity.ok(response);
-        } catch (Exception e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
-        }
+        return ResponseEntity.ok(response);
     }
 
     @GetMapping("/my")
     public ResponseEntity<?> getMyComments() {
-        try {
-            String username = getCurrentUsername();
-            User user = userService.findByUsername(username);
+        String username = getCurrentUsername();
+        User user = userService.findByUsername(username);
 
-            List<CommentResponse> comments = commentService.getUserComments(user.getId());
-            return ResponseEntity.ok(comments);
-        } catch (Exception e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
-        }
+        List<CommentResponse> comments = commentService.getUserComments(user.getId());
+        return ResponseEntity.ok(comments);
     }
 
     @DeleteMapping("/{commentId}")
     public ResponseEntity<?> deleteComment(@PathVariable Long commentId) {
-        try {
-            String username = getCurrentUsername();
-            User user = userService.findByUsername(username);
+        String username = getCurrentUsername();
+        User user = userService.findByUsername(username);
 
-            commentService.deleteComment(commentId, user.getId());
-            return ResponseEntity.ok(Map.of("message", "Comment deleted successfully"));
-        } catch (Exception e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
-        }
+        commentService.deleteComment(commentId, user.getId());
+        return ResponseEntity.ok(Map.of("message", "Comment deleted successfully"));
     }
 
     private String getCurrentUsername() {

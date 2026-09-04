@@ -3,6 +3,8 @@ package com.example.fishingapp.service;
 
 import com.example.fishingapp.dto.CommentRequest;
 import com.example.fishingapp.dto.CommentResponse;
+import com.example.fishingapp.exception.ForbiddenOperationException;
+import com.example.fishingapp.exception.ResourceNotFoundException;
 import com.example.fishingapp.model.Catch;
 import com.example.fishingapp.model.Comment;
 import com.example.fishingapp.model.User;
@@ -61,10 +63,10 @@ public class CommentService {
     @Transactional
     public void deleteComment(Long commentId, Long userId) {
         Comment comment = commentRepository.findById(commentId)
-                .orElseThrow(() -> new RuntimeException("Comment not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Comment not found"));
 
         if (!comment.getUser().getId().equals(userId)) {
-            throw new RuntimeException("You can only delete your own comments");
+            throw new ForbiddenOperationException("You can only delete your own comments");
         }
 
         commentRepository.delete(comment);

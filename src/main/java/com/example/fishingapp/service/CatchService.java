@@ -3,6 +3,7 @@ package com.example.fishingapp.service;
 
 import com.example.fishingapp.dto.CatchRequest;
 import com.example.fishingapp.dto.CatchResponse;
+import com.example.fishingapp.exception.ResourceNotFoundException;
 import com.example.fishingapp.model.Catch;
 import com.example.fishingapp.model.User;
 import com.example.fishingapp.repository.CatchRepository;
@@ -56,7 +57,7 @@ public class CatchService {
 
     public Catch getCatchById(Long id) {
         return catchRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Catch not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Catch not found"));
     }
 
     public Catch saveCatch(Catch catchEntity) {
@@ -78,10 +79,7 @@ public class CatchService {
         existingCatch.setBait(request.getBait());
         existingCatch.setDescription(request.getDescription());
 
-        if (request.getPhotoUrl() != null) {
-            existingCatch.setPhotoUrl(request.getPhotoUrl());
-        }
-
+        // ВНИМАНИЕ: photoUrl намеренно НЕ обновляется здесь, даже если он передан в запросе.
         if (request.getIsLocationHidden() != null) {
             existingCatch.setIsLocationHidden(request.getIsLocationHidden());
         }

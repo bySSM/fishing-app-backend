@@ -27,34 +27,26 @@ public class AuthController {
 
     @PostMapping("/register")
     public ResponseEntity<?> register(@Valid @RequestBody RegisterRequest request) {
-        try {
-            User user = userService.register(request);
-            String token = jwtService.generateToken(user.getUsername());
+        User user = userService.register(request);
+        String token = jwtService.generateToken(user.getUsername());
 
-            Map<String, Object> response = new HashMap<>();
-            response.put("user", mapToUserResponse(user));
-            response.put("token", token);
+        Map<String, Object> response = new HashMap<>();
+        response.put("user", mapToUserResponse(user));
+        response.put("token", token);
 
-            return ResponseEntity.ok(response);
-        } catch (Exception e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
-        }
+        return ResponseEntity.ok(response);
     }
 
     @PostMapping("/login")
     public ResponseEntity<?> login(@Valid @RequestBody LoginRequest request) {
-        try {
-            User user = userService.login(request);
-            String token = jwtService.generateToken(user.getUsername());
+        User user = userService.login(request);
+        String token = jwtService.generateToken(user.getUsername());
 
-            Map<String, Object> response = new HashMap<>();
-            response.put("user", mapToUserResponse(user));
-            response.put("token", token);
+        Map<String, Object> response = new HashMap<>();
+        response.put("user", mapToUserResponse(user));
+        response.put("token", token);
 
-            return ResponseEntity.ok(response);
-        } catch (Exception e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
-        }
+        return ResponseEntity.ok(response);
     }
 
     private UserResponse mapToUserResponse(User user) {

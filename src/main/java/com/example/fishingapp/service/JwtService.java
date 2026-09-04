@@ -5,6 +5,7 @@ import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
+import jakarta.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
@@ -19,11 +20,32 @@ import java.util.function.Function;
 @Service
 public class JwtService {
 
+    // Минимальная длина секрета для HS256 — 256 бит = 32 байта.
+    // Более короткий ключ библиотека jjwt всё равно отклонит при первом использовании
+    // (WeakKeyException), но лучше упасть сразу при старте приложения с понятным
+    // сообщением, чем через месяц в рантайме при первом логине пользователя.
+    private static final int MIN_SECRET_BYTES = 32;
+
     @Value("${app.jwt.secret}")
     private String secret;
 
     @Value("${app.jwt.expiration}")
     private Long expiration;
+
+    @PostConstruct
+    private void validateSecret() {
+        if (secret == null || secret.isBlank()) {
+            throw new IllegalStateException(
+                    "JWT_SECRET не задан. Установите переменную окружения JWT_SECRET " +
+                            "(случайная строка минимум 32 байта, например: openssl rand -base64 32)");
+        }
+        int byteLength = secret.getBytes(StandardCharsets.UTF_8).length;
+        if (byteLength < MIN_SECRET_BYTES) {
+            throw new IllegalStateException(
+                    "JWT_SECRET слишком короткий (" + byteLength + " байт из " + MIN_SECRET_BYTES +
+                            " минимально необходимых для HS256). Сгенерируйте новый: openssl rand -base64 32");
+        }
+    }
 
     private SecretKey getSigningKey() {
         return Keys.hmacShaKeyFor(secret.getBytes(StandardCharsets.UTF_8));

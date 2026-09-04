@@ -1,6 +1,7 @@
 // src/main/java/com/example/fishingapp/service/LikeService.java
 package com.example.fishingapp.service;
 
+import com.example.fishingapp.exception.ResourceNotFoundException;
 import com.example.fishingapp.model.Catch;
 import com.example.fishingapp.model.Like;
 import com.example.fishingapp.model.User;
@@ -36,16 +37,14 @@ public class LikeService {
         Map<String, Object> response = new HashMap<>();
 
         if (likeRepository.existsByUserAndCatchEntity(user, catchEntity)) {
-            // Убрать лайк
             Like like = likeRepository.findByUserAndCatchEntity(user, catchEntity)
-                    .orElseThrow(() -> new RuntimeException("Like not found"));
+                    .orElseThrow(() -> new ResourceNotFoundException("Like not found"));
             likeRepository.delete(like);
             catchEntity.decrementLikes();
 
             response.put("liked", false);
             response.put("likesCount", catchEntity.getLikesCount());
         } else {
-            // Поставить лайк
             Like like = new Like();
             like.setUser(user);
             like.setCatchEntity(catchEntity);

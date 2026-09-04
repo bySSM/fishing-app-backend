@@ -25,22 +25,14 @@ public class AquariumController {
 
     @GetMapping("/my")
     public ResponseEntity<?> getMyAquarium() {
-        try {
-            String username = getCurrentUsername();
-            User user = userService.findByUsername(username);
-            return getAquarium(user.getId());
-        } catch (Exception e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
-        }
+        String username = getCurrentUsername();
+        User user = userService.findByUsername(username);
+        return getAquarium(user.getId());
     }
 
     @GetMapping("/user/{userId}")
     public ResponseEntity<?> getUserAquarium(@PathVariable Long userId) {
-        try {
-            return getAquarium(userId);
-        } catch (Exception e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
-        }
+        return getAquarium(userId);
     }
 
     private ResponseEntity<?> getAquarium(Long userId) {

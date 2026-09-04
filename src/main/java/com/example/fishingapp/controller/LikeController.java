@@ -25,33 +25,25 @@ public class LikeController {
 
     @PostMapping("/catch/{catchId}/toggle")
     public ResponseEntity<?> toggleLike(@PathVariable Long catchId) {
-        try {
-            String username = getCurrentUsername();
-            User user = userService.findByUsername(username);
+        String username = getCurrentUsername();
+        User user = userService.findByUsername(username);
 
-            Map<String, Object> result = likeService.toggleLike(catchId, user.getId());
-            return ResponseEntity.ok(result);
-        } catch (Exception e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
-        }
+        Map<String, Object> result = likeService.toggleLike(catchId, user.getId());
+        return ResponseEntity.ok(result);
     }
 
     @GetMapping("/catch/{catchId}/status")
     public ResponseEntity<?> getLikeStatus(@PathVariable Long catchId) {
-        try {
-            String username = getCurrentUsername();
-            User user = userService.findByUsername(username);
+        String username = getCurrentUsername();
+        User user = userService.findByUsername(username);
 
-            boolean liked = likeService.isLiked(catchId, user.getId());
-            long count = likeService.getLikesCount(catchId);
+        boolean liked = likeService.isLiked(catchId, user.getId());
+        long count = likeService.getLikesCount(catchId);
 
-            return ResponseEntity.ok(Map.of(
-                    "liked", liked,
-                    "likesCount", count
-            ));
-        } catch (Exception e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
-        }
+        return ResponseEntity.ok(Map.of(
+                "liked", liked,
+                "likesCount", count
+        ));
     }
 
     @GetMapping("/ratings")

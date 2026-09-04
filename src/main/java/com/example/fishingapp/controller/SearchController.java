@@ -7,6 +7,7 @@ import com.example.fishingapp.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -24,30 +25,22 @@ public class SearchController {
 
     @GetMapping("/users")
     public ResponseEntity<?> searchUsers(@RequestParam String query) {
-        try {
-            List<User> users = userService.searchUsers(query);
+        List<User> users = userService.searchUsers(query);
 
-            List<Map<String, Object>> response = users.stream()
-                    .map(user -> {
-                        Map<String, Object> map = new HashMap<>();
-                        map.put("id", user.getId());
-                        map.put("username", user.getUsername());
-                        map.put("email", user.getEmail());
-                        map.put("createdAt", user.getCreatedAt());
+        List<Map<String, Object>> response = users.stream()
+                .map(user -> {
+                    Map<String, Object> map = new HashMap<>();
+                    map.put("id", user.getId());
+                    map.put("username", user.getUsername());
+                    map.put("createdAt", user.getCreatedAt());
 
-                        // Получаем позицию в рейтинге
-                        int position = ratingService.getUserRatingPosition(user.getId());
-                        map.put("rating", position);
+                    int position = ratingService.getUserRatingPosition(user.getId());
+                    map.put("rating", position);
 
-                        System.out.println("🔍 Поиск: " + user.getUsername() + " → позиция #" + position);
+                    return map;
+                })
+                .collect(Collectors.toList());
 
-                        return map;
-                    })
-                    .collect(Collectors.toList());
-
-            return ResponseEntity.ok(response);
-        } catch (Exception e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
-        }
+        return ResponseEntity.ok(response);
     }
 }
