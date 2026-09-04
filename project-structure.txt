@@ -1,14 +1,12 @@
-./.DS_Store
 ./.gitattributes
 ./.gitignore
 ./.mvn/wrapper/maven-wrapper.properties
 ./HELP.md
-./README.md
 ./mvnw
 ./mvnw.cmd
 ./pom.xml
 ./project-structure.txt
-./src/main/java/com/example/fishingapp/FishingappApplication.java
+./README.md
 ./src/main/java/com/example/fishingapp/config/JwtAuthenticationFilter.java
 ./src/main/java/com/example/fishingapp/config/RatingInitializer.java
 ./src/main/java/com/example/fishingapp/config/SecurityConfig.java
@@ -29,6 +27,10 @@
 ./src/main/java/com/example/fishingapp/dto/RatingResponse.java
 ./src/main/java/com/example/fishingapp/dto/RegisterRequest.java
 ./src/main/java/com/example/fishingapp/dto/UserResponse.java
+./src/main/java/com/example/fishingapp/exception/ForbiddenOperationException.java
+./src/main/java/com/example/fishingapp/exception/GlobalExceptionHandler.java
+./src/main/java/com/example/fishingapp/exception/ResourceNotFoundException.java
+./src/main/java/com/example/fishingapp/FishingappApplication.java
 ./src/main/java/com/example/fishingapp/model/Catch.java
 ./src/main/java/com/example/fishingapp/model/Comment.java
 ./src/main/java/com/example/fishingapp/model/Like.java
@@ -37,6 +39,8 @@
 ./src/main/java/com/example/fishingapp/repository/CommentRepository.java
 ./src/main/java/com/example/fishingapp/repository/LikeRepository.java
 ./src/main/java/com/example/fishingapp/repository/UserRepository.java
+./src/main/java/com/example/fishingapp/security/AuthRateLimitingFilter.java
+./src/main/java/com/example/fishingapp/security/RateLimiter.java
 ./src/main/java/com/example/fishingapp/service/CatchService.java
 ./src/main/java/com/example/fishingapp/service/CommentService.java
 ./src/main/java/com/example/fishingapp/service/CustomUserDetailsService.java
@@ -47,8 +51,3 @@
 ./src/main/java/com/example/fishingapp/service/UserService.java
 ./src/main/resources/application.properties
 ./src/test/java/com/example/fishingapp/FishingappApplicationTests.java
-./uploads/.DS_Store
-./uploads/a5453173-b9e7-401a-96bb-a052d674b87a.jpg
-./uploads/a733e999-80c9-4792-8486-c5ab55a93635.jpg
-./uploads/a989d2ee-c7cc-4e5e-a57b-272a276f8a8a.jpg
-./uploads/b194436b-522d-4eb6-a595-15cc04777caf.jpg
