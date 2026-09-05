@@ -4,6 +4,7 @@ package com.example.fishingapp.service;
 import com.example.fishingapp.dto.LoginRequest;
 import com.example.fishingapp.dto.RegisterRequest;
 import com.example.fishingapp.exception.ResourceNotFoundException;
+import com.example.fishingapp.exception.ValidationException;
 import com.example.fishingapp.model.User;
 import com.example.fishingapp.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,10 +24,10 @@ public class UserService {
 
     public User register(RegisterRequest request) {
         if (userRepository.existsByUsername(request.getUsername())) {
-            throw new RuntimeException("Username already exists");
+            throw new ValidationException("Username already exists");
         }
         if (userRepository.existsByEmail(request.getEmail())) {
-            throw new RuntimeException("Email already exists");
+            throw new ValidationException("Email already exists");
         }
 
         User user = new User();
@@ -39,10 +40,10 @@ public class UserService {
 
     public User login(LoginRequest request) {
         User user = userRepository.findByUsername(request.getUsername())
-                .orElseThrow(() -> new RuntimeException("Invalid username or password"));
+                .orElseThrow(() -> new ValidationException("Invalid username or password"));
 
         if (!passwordEncoder.matches(request.getPassword(), user.getPassword())) {
-            throw new RuntimeException("Invalid username or password");
+            throw new ValidationException("Invalid username or password");
         }
 
         return user;

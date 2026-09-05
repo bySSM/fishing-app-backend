@@ -1,5 +1,6 @@
 package com.example.fishingapp.config;
 
+import com.example.fishingapp.security.ApiRateLimitingFilter;
 import com.example.fishingapp.security.AuthRateLimitingFilter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -20,7 +21,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 
 @Configuration
 @EnableWebSecurity
-@EnableScheduling // нужно для периодической очистки RateLimiter (см. RateLimiter.cleanup())
+@EnableScheduling
 public class SecurityConfig {
 
     @Autowired
@@ -28,6 +29,9 @@ public class SecurityConfig {
 
     @Autowired
     private AuthRateLimitingFilter authRateLimitingFilter;
+
+    @Autowired
+    private ApiRateLimitingFilter apiRateLimitingFilter;
 
     @Autowired
     private UserDetailsService userDetailsService;
@@ -59,7 +63,6 @@ public class SecurityConfig {
                 )
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/api/auth/**").permitAll()
-                        .requestMatchers("/api/likes/ratings").permitAll()
                         .requestMatchers("/uploads/**").permitAll()
                         .requestMatchers("/api/rating/**").permitAll()
                         .requestMatchers("/api/search/**").authenticated()
@@ -67,7 +70,8 @@ public class SecurityConfig {
                 )
                 .authenticationProvider(authenticationProvider())
                 .addFilterBefore(authRateLimitingFilter, UsernamePasswordAuthenticationFilter.class)
-                .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
+                .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
+                .addFilterAfter(apiRateLimitingFilter, JwtAuthenticationFilter.class);
 
         return http.build();
     }

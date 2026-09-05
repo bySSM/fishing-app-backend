@@ -10,10 +10,13 @@ import com.example.fishingapp.service.CatchService;
 import com.example.fishingapp.service.FileStorageService;
 import com.example.fishingapp.service.UserService;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.DecimalMax;
+import jakarta.validation.constraints.DecimalMin;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -23,6 +26,7 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/api/catches")
+@Validated
 public class CatchController {
 
     @Autowired
@@ -49,10 +53,27 @@ public class CatchController {
     public ResponseEntity<?> createCatchWithPhoto(
             @RequestParam("photo") MultipartFile photo,
             @RequestParam("fishType") String fishType,
-            @RequestParam(value = "weight", required = false) Double weight,
-            @RequestParam(value = "length", required = false) Double length,
-            @RequestParam("latitude") Double latitude,
-            @RequestParam("longitude") Double longitude,
+
+            @RequestParam(value = "weight", required = false)
+            @DecimalMin(value = "0.01", message = "Weight must be greater than 0")
+            @DecimalMax(value = "1000", message = "Weight seems unrealistic (max 1000 kg)")
+            Double weight,
+
+            @RequestParam(value = "length", required = false)
+            @DecimalMin(value = "0.1", message = "Length must be greater than 0")
+            @DecimalMax(value = "500", message = "Length seems unrealistic (max 500 cm)")
+            Double length,
+
+            @RequestParam("latitude")
+            @DecimalMin(value = "-90", message = "Latitude must be between -90 and 90")
+            @DecimalMax(value = "90", message = "Latitude must be between -90 and 90")
+            Double latitude,
+
+            @RequestParam("longitude")
+            @DecimalMin(value = "-180", message = "Longitude must be between -180 and 180")
+            @DecimalMax(value = "180", message = "Longitude must be between -180 and 180")
+            Double longitude,
+
             @RequestParam(value = "bait", required = false) String bait,
             @RequestParam(value = "description", required = false) String description,
             @RequestParam(value = "isLocationHidden", required = false, defaultValue = "false") Boolean isLocationHidden) {
@@ -128,9 +149,22 @@ public class CatchController {
     }
 
     @GetMapping("/nearby")
-    public List<CatchResponse> getNearbyCatches(@RequestParam double lat,
-                                                @RequestParam double lng,
-                                                @RequestParam(defaultValue = "10") double radiusKm) {
+    public List<CatchResponse> getNearbyCatches(
+            @RequestParam
+            @DecimalMin(value = "-90", message = "Latitude must be between -90 and 90")
+            @DecimalMax(value = "90", message = "Latitude must be between -90 and 90")
+            double lat,
+
+            @RequestParam
+            @DecimalMin(value = "-180", message = "Longitude must be between -180 and 180")
+            @DecimalMax(value = "180", message = "Longitude must be between -180 and 180")
+            double lng,
+
+            @RequestParam(defaultValue = "10")
+            @DecimalMin(value = "0.1", message = "radiusKm must be greater than 0")
+            @DecimalMax(value = "20000", message = "radiusKm must not exceed 20000 (whole Earth)")
+            double radiusKm) {
+
         return catchService.getNearbyCatches(lat, lng, radiusKm)
                 .stream()
                 .map(catchService::mapToResponse)

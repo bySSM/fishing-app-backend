@@ -65,8 +65,16 @@ public class CommentService {
         Comment comment = commentRepository.findById(commentId)
                 .orElseThrow(() -> new ResourceNotFoundException("Comment not found"));
 
-        if (!comment.getUser().getId().equals(userId)) {
-            throw new ForbiddenOperationException("You can only delete your own comments");
+        // Удалить комментарий может либо его автор, либо владелец улова, под которым
+        // комментарий оставлен (модерация на своей же карточке). Раньше разрешался
+        // только первый вариант — из-за этого владелец улова не мог убрать чужой
+        // комментарий со своего собственного улова.
+        boolean isCommentAuthor = comment.getUser().getId().equals(userId);
+        boolean isCatchOwner = comment.getCatchEntity().getUser().getId().equals(userId);
+
+        if (!isCommentAuthor && !isCatchOwner) {
+            throw new ForbiddenOperationException(
+                    "You can only delete your own comments or comments on your own catches");
         }
 
         commentRepository.delete(comment);
